@@ -1,4 +1,4 @@
-#include "gems.hpp"
+#include "gametable.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wcex.lpszMenuName = NULL;
-	wcex.lpszClassName = (LPCWSTR)"GLSample";
+	wcex.lpszClassName = "GLSample";
 	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);;
 
 
@@ -52,8 +52,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	/* create main window */
 	hwnd = CreateWindowEx(0,
-		(LPCWSTR)"GLSample",
-		(LPCWSTR)"OpenGL Sample",
+		"GLSample",
+		"OpenGL Sample",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
