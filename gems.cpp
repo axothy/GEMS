@@ -101,7 +101,7 @@ void reColour::DrawElem() {
 
 GameTable::GameTable(int mapH, int mapW) {
 	pos = new position * [mapH];
-	block = new std::shared_ptr<Elem> * [mapH];
+	block = new std::shared_ptr<Elem>*[mapH];
 	for (int i = 0; i < mapH; i++) {
 		pos[i] = new position[mapW];
 		block[i] = new std::shared_ptr<Elem>[mapW];
@@ -181,8 +181,7 @@ void GameTable::KaBOOM() {
 					block[x][y2] = block[x][y2 + 1];
 					block[x][y2 + 1] = swap;
 				}
-				block[x][y2]->~Elem();
-				block[x][y2] = std::shared_ptr<Elem>(new Quad(ColorName(RED + ColorName(rand()) % (CYAN - RED + 1)), pos[x][y2]));
+				block[x][y2].reset(new Quad(ColorName(RED + ColorName(rand()) % (CYAN - RED + 1)), pos[x][y2]));
 				for (int i = 0; i < 5; i++) {
 					x1 = rand() % mapW;
 					y1 = rand() % mapH;
@@ -210,8 +209,7 @@ void GameTable::REColorBonus() {
 				int x1 = x, y1 = y;
 				block[x][y]->select = false;
 				recolorSave = block[x][y]->GetColor();
-				block[x][y]->~Elem();
-				block[x][y] = std::shared_ptr<Elem>(new Quad(recolorSave, pos[x][y]));
+				block[x][y].reset(new Quad(recolorSave, pos[x][y]));
 				for (int i = 0; i < 2; i++) {
 					int rng1 = 100, rng2 = 100;
 					while (x + rng1 >= mapW || x + rng1 < 0 || y + rng2 >= mapH || y + rng2 < 0) {
@@ -245,22 +243,20 @@ void GameTable::PushUpAndRecolour(position posToUp) {
 	if (rand() % 10 == 1) {
 		if (y == mapH - 1) {
 			rgb recolorSave = block[x][y]->color;
-			block[x][y]->~Elem();
 			if (rand() % 2 == 1) {
-				block[x][y] = std::shared_ptr<Elem>(new Bomb({ x,y }));
+				block[x][y].reset(new Bomb({ x,y }));
 			}
 			else
-				block[x][y] = std::shared_ptr <Elem>(new reColour(recolorSave, { x, y }));
+				block[x][y].reset(new reColour(recolorSave, { x, y }));
 			return;
 		}
 		else {
 			rgb recolorSave = block[x][y]->color;
-			block[x][y + 1]->~Elem();
 			if (rand() % 2 == 1) {
-				block[x][y + 1] = std::shared_ptr<Elem>(new Bomb({ x,y + 1 }));
+				block[x][y + 1].reset(new Bomb({ x,y + 1 }));
 			}
 			else
-				block[x][y + 1] = std::shared_ptr <Elem>(new reColour(recolorSave, { x, y + 1 }));
+				block[x][y + 1].reset(new reColour(recolorSave, { x, y + 1 }));
 		}
 	}
 	for (; y < mapH - 1; y++)
@@ -345,3 +341,4 @@ void GameTable::CheckRowsTable()
 	}
 	PushStack(posToUp);
 }
+
