@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <cstdio>
@@ -32,7 +33,6 @@ public:
 	bool select = false;
 	Elem(ColorName name, position place);
 	Elem(rgb newColor, position place);
-	~Elem();
 	void DrawFrame();
 	virtual void DrawElem() = 0;
 	virtual rgb GetColor();
