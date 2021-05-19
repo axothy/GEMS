@@ -25,7 +25,6 @@ struct position {
 
 class GameTable
 {
-public:
 	std::shared_ptr<Elem>** block;
 	position** pos;
 
@@ -36,11 +35,14 @@ public:
 	inline void FreeStack(std::stack<position>& stackToFree);
 	bool IsColorEqColor(const rgb& currentColor, const position& posElem);
 	void CreateBonus(const position& posToBonus);
-	void KaBOOM();
 	void BOOM();
-	void REColorBonus();
+
+public:
 	void BuildTable();
+	void ReplaceElem();
+	void REColorBonus();
 	void CheckRowsTable();
 	void CheckColumnsTable();
-	void ReplaceElem();
+	void KaBOOM();
+
 };
