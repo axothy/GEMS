@@ -30,11 +30,14 @@ public:
 	position** pos;
 
 	GameTable(int mapH, int mapW);
-	void PushUpAndRecolour(position posToUp);
+	void PushUpAndRecolour(const position& posToUp);
+	void BrokeElem(const position& posToUp);
 	inline void PushStack(std::stack<position>& stackToUp);
 	inline void FreeStack(std::stack<position>& stackToFree);
-	bool IsColorEqColor(rgb currentColor, position posElem);
+	bool IsColorEqColor(const rgb& currentColor, const position& posElem);
+	void CreateBonus(const position& posToBonus);
 	void KaBOOM();
+	void BOOM();
 	void REColorBonus();
 	void BuildTable();
 	void CheckRowsTable();

@@ -1,6 +1,6 @@
 #include "bomb.h"
 
-Bomb::Bomb(position place) : Elem(BLACK, place) {}
+Bomb::Bomb(position& place) : Elem(BLACK, place) {}
 
 void Bomb::DrawElem() {
 	glBegin(GL_TRIANGLE_FAN);

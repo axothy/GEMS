@@ -1,8 +1,8 @@
 #include "quad.h"
 
-Quad::Quad(rgb newColor, position place) : Elem(newColor, place) {}
+Quad::Quad(const rgb& newColor, const position& place) : Elem(newColor, place) {}
 
-Quad::Quad(ColorName name, position place) : Elem(name, place) {}
+Quad::Quad(const ColorName& name, const position& place) : Elem(name, place) {}
 
 void Quad::DrawElem() {
 	glBegin(GL_TRIANGLE_FAN);

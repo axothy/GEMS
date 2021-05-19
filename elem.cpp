@@ -1,11 +1,11 @@
 #include "elem.h"
 
-Elem::Elem(ColorName name, position place) {
+Elem::Elem(const ColorName& name, const position& place) {
 	color = colors::pallete[name];
 	pos = place;
 }
 
-Elem::Elem(rgb newColor, position place) {
+Elem::Elem(const rgb& newColor, const position& place) {
 	color = newColor;
 	pos = place;
 }

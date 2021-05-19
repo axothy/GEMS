@@ -4,7 +4,7 @@
 class reColour : public Elem {
 public:
 	rgb lastColor;
-	reColour(rgb prevCol, position place);
+	reColour(const rgb& prevCol, const position& place);
 	void DrawElem();
 	rgb GetColor();
 };

@@ -15,7 +15,7 @@ GameTable::GameTable(int mapH, int mapW) {
 		{
 			ColorName rng = ColorName(RED + ColorName(rand()) % (CYAN - RED + 1));
 			pos[i][j] = { i, j };
-			block[i][j] = std::shared_ptr<Elem>(new Quad(rng, pos[i][j]));
+			block[i][j] = std::make_shared<Quad>(Quad(rng, pos[i][j]));
 		}
 	}
 }
@@ -70,54 +70,52 @@ void GameTable::ReplaceElem()
 	}
 }
 
+void GameTable::BOOM() {
+	int x1, y1;
+	for (int i = 0; i < 5; i++) {
+		x1 = rand() % mapW;
+		y1 = rand() % mapH;
+		BrokeElem({ x1, y1 });
+	}
+}
+
 void GameTable::KaBOOM() {
-	std::shared_ptr<Elem> swap;
-	int x1, y1, y2;
 	for (int x = 0; x < mapW; x++) {
 		for (int y = 0; y < mapH; y++) {
 			if (block[x][y]->select && IsColorEqColor(colors::pallete[BLACK], { x,y })) {
 				block[x][y]->select = false;
-				for (y2 = y; y2 < mapH - 1; y2++)
-				{
-					swap = block[x][y2];
-					block[x][y2] = block[x][y2 + 1];
-					block[x][y2 + 1] = swap;
-				}
-				block[x][y2].reset(new Quad(ColorName(RED + ColorName(rand()) % (CYAN - RED + 1)), pos[x][y2]));
-				for (int i = 0; i < 5; i++) {
-					x1 = rand() % mapW;
-					y1 = rand() % mapH;
-					PushUpAndRecolour({ x1, y1 });
-				}
+				PushUpAndRecolour({x, y});
+				BOOM();
 			}
 
 		}
 	}
 }
 
-
+inline void GetPosForReColor(int x, int y, int& rng1, int& rng2) {
+	while (x + rng1 >= mapW || x + rng1 < 0 || y + rng2 >= mapH || y + rng2 < 0) {
+		rng1 = 1 + rand() % 2;
+		rng2 = 1 + rand() % 2;
+		if (rand() % 2) {
+			rng1 = -rng1;
+		}
+		if (rand() % 2) {
+			rng2 = -rng2;
+		}
+	}
+}
 
 void GameTable::REColorBonus() {
 	for (int x = 0; x < mapW; x++) {
 		for (int y = 0; y < mapH; y++) {
 			if (block[x][y]->select && IsColorEqColor(colors::pallete[WHITE], { x,y })) {
 				rgb recolorSave;
-				int x1 = x, y1 = y;
 				block[x][y]->select = false;
 				recolorSave = block[x][y]->GetColor();
 				block[x][y].reset(new Quad(recolorSave, pos[x][y]));
 				for (int i = 0; i < 2; i++) {
 					int rng1 = 100, rng2 = 100;
-					while (x + rng1 >= mapW || x + rng1 < 0 || y + rng2 >= mapH || y + rng2 < 0) {
-						rng1 = 1 + rand() % 2;
-						rng2 = 1 + rand() % 2;
-						if (rand() % 2) {
-							rng1 = -rng1;
-						}
-						if (rand() % 2) {
-							rng2 = -rng2;
-						}
-					}
+					GetPosForReColor(x, y, rng1, rng2);
 					block[x + rng1][y + rng2]->color = recolorSave;
 				}
 			}
@@ -125,46 +123,55 @@ void GameTable::REColorBonus() {
 	}
 }
 
-
-void GameTable::PushUpAndRecolour(position posToUp) {
-	std::shared_ptr<Elem> swap;
+void GameTable::PushUpAndRecolour(const position& posToUp)
+{
 	int x = posToUp.x, y = posToUp.y;
-	if (IsColorEqColor(colors::pallete[BLACK], { x,y })) {
-		block[x][y]->select = true;
-		KaBOOM();
-	}
-	if (rand() % 10 == 1) {
-		if (y == mapH - 1) {
-			rgb recolorSave = block[x][y]->color;
-			if (rand() % 2 == 1) {
-				block[x][y].reset(new Bomb({ x,y }));
-			}
-			else
-				block[x][y].reset(new reColour(recolorSave, { x, y }));
-			return;
-		}
-		else {
-			rgb recolorSave = block[x][y]->color;
-			if (rand() % 2 == 1) {
-				block[x][y + 1].reset(new Bomb({ x,y + 1 }));
-			}
-			else
-				block[x][y + 1].reset(new reColour(recolorSave, { x, y + 1 }));
-		}
-	}
+	
 	for (; y < mapH - 1; y++)
 	{
-		swap = block[x][y];
-		block[x][y] = block[x][y + 1];
-		block[x][y + 1] = swap;
+		std::swap(block[x][y], block[x][y + 1]);
 	}
 	block[x][y]->color = colors::pallete[ColorName(RED + ColorName(rand()) % (CYAN - RED + 1))];
+}
+
+const int BonusChance = 10;
+
+const int BombChance = 2;
+
+void GameTable::CreateBonus(const position& posToBonus) {
+	int x = posToBonus.x, y = posToBonus.y;
+	if (y == mapH - 1) {
+		rgb recolorSave = block[x][y]->color;
+		if (rand() % BombChance == 1) {
+			block[x][y].reset(new Bomb({ x,y }));
+		}
+		else
+			block[x][y].reset(new reColour(recolorSave, { x, y }));
+		return;
+	}
+	else {
+		rgb recolorSave = block[x][y]->color;
+		if (rand() % BombChance == 1) {
+			block[x][y + 1].reset(new Bomb({ x,y + 1 }));
+		}
+		else
+			block[x][y + 1].reset(new reColour(recolorSave, { x, y + 1 }));
+	}
+}
+
+void GameTable::BrokeElem(const position& posToUp) {
+	std::shared_ptr<Elem> swap;
+	int x = posToUp.x, y = posToUp.y;
+	if (rand() % BonusChance == 1) {
+		CreateBonus({ x,y });
+	}
+	PushUpAndRecolour({ x,y });
 }
 
 inline void GameTable::PushStack(std::stack<position>& stackToUp) {
 	if (stackToUp.size() >= 3) {
 		while (!stackToUp.empty()) {
-			PushUpAndRecolour(stackToUp.top());
+			BrokeElem(stackToUp.top());
 			stackToUp.pop();
 		}
 	}
@@ -176,7 +183,7 @@ inline void GameTable::FreeStack(std::stack<position>& stackToFree) {
 	}
 }
 
-bool GameTable::IsColorEqColor(rgb currentColor, position posElem) {
+bool GameTable::IsColorEqColor(const rgb& currentColor, const position& posElem) {
 	return (currentColor.red == block[posElem.x][posElem.y]->color.red &&
 		currentColor.green == block[posElem.x][posElem.y]->color.green &&
 		currentColor.blue == block[posElem.x][posElem.y]->color.blue);

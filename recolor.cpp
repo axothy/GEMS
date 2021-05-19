@@ -1,6 +1,6 @@
 #include "recolor.h"
 
-reColour::reColour(rgb prevCol, position place) : Elem(WHITE, place) {
+reColour::reColour(const rgb& prevCol, const position& place) : Elem(WHITE, place) {
 	lastColor = prevCol;
 }
 

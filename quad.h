@@ -4,7 +4,7 @@
 class Quad : public Elem
 {
 public:
-	Quad(ColorName name, position place);
-	Quad(rgb newColor, position place);
+	Quad(const ColorName& name, const position& place);
+	Quad(const rgb& newColor, const position& place);
 	void DrawElem();
 };
